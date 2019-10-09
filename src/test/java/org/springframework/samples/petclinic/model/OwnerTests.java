@@ -6,6 +6,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.HashSet;
 
+import java.util.List;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 
@@ -122,22 +123,26 @@ public class OwnerTests {
     }
 
     @Test
-    public void getPetsInternalNullTest() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public void getPetsInternalNullTest() throws IllegalAccessException, InvocationTargetException {
         Owner owner = new Owner();
         setField(owner, "pets", null);
 
-        Method method = Owner.class.getDeclaredMethod("getPetsInternal", null);
-
-        method.setAccessible(true);
-        Set<Pet> returnValue = (Set<Pet>) method.invoke(owner, null);
-        method.setAccessible(false);
-
-        assertTrue(returnValue instanceof HashSet<?>);
-        assertEquals(returnValue.size(), 0);
+        try {
+            Method method = Owner.class.getDeclaredMethod("getPetsInternal", null);
+            
+            method.setAccessible(true);
+            Set<Pet> returnValue = (Set<Pet>) method.invoke(owner, null);
+            method.setAccessible(false);
+            
+            assertTrue(returnValue instanceof HashSet<?>);
+            assertEquals(returnValue.size(), 0);
+        } catch(NoSuchMethodException e) {
+            assert false : "getPetsInternal method is missing";
+        }
     }
 
     @Test
-    public void getPetsInternalWithValueTest() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public void getPetsInternalWithValueTest() throws IllegalAccessException, InvocationTargetException {
         Owner owner = new Owner();
         
         HashSet<Pet> pets = new HashSet<>();
@@ -146,57 +151,124 @@ public class OwnerTests {
         pets.add(pet);
         setField(owner, "pets", pets);
 
-        Method method = Owner.class.getDeclaredMethod("getPetsInternal", null);
-
-        method.setAccessible(true);
-        Set<Pet> returnValue = (Set<Pet>) method.invoke(owner, null);
-        method.setAccessible(false);
-
-        assertTrue(returnValue instanceof HashSet<?>);
-        assertEquals(returnValue.size(), 1);
-        assertTrue(returnValue.contains(pet));
-        assertFalse(returnValue.contains(pet2));
+        try {
+            Method method = Owner.class.getDeclaredMethod("getPetsInternal", null);
+            
+            method.setAccessible(true);
+            Set<Pet> returnValue = (Set<Pet>) method.invoke(owner, null);
+            method.setAccessible(false);
+            
+            assertTrue(returnValue instanceof HashSet<?>);
+            assertEquals(returnValue.size(), 1);
+            assertTrue(returnValue.contains(pet));
+            assertFalse(returnValue.contains(pet2));
+        } catch(NoSuchMethodException e) {
+            assert false : "getPetsInternal method is missing";
+        }
     }
 
     @Test
-    public void setPetsInternalTest() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public void setPetsInternalTest() throws IllegalAccessException, InvocationTargetException {
         Owner owner = new Owner();
-
         HashSet<Pet> pets = new HashSet<>();
         Pet pet = new Pet();
         Pet pet2 = new Pet();
         pets.add(pet);
         pets.add(pet2);
 
-        Method method = Owner.class.getDeclaredMethod("setPetsInternal", Set.class);
-
-        method.setAccessible(true);
-        Set<Pet> returnValue = (Set<Pet>) method.invoke(owner, pets);
-        method.setAccessible(false);
-
-        HashSet<Pet> settedPets = (HashSet) getField(owner, "pets");
-
-        assertTrue(settedPets instanceof HashSet<?>);
-        assertEquals(settedPets.size(), 2);
-        assertTrue(settedPets.contains(pet));
-        assertTrue(settedPets.contains(pet2));
+        try {
+            Method method = Owner.class.getDeclaredMethod("setPetsInternal", Set.class);
+            
+            method.setAccessible(true);
+            Set<Pet> returnValue = (Set<Pet>) method.invoke(owner, pets);
+            method.setAccessible(false);
+            
+            HashSet<Pet> settedPets = (HashSet) getField(owner, "pets");
+            
+            assertTrue(settedPets instanceof HashSet<?>);
+            assertEquals(settedPets.size(), 2);
+            assertTrue(settedPets.contains(pet));
+            assertTrue(settedPets.contains(pet2));
+        } catch(NoSuchMethodException e) {
+            assert false : "setPetsInternal method is missing";
+        }
     }
 
     @Test
-    @Ignore
-    public void shouldNotValidateWhenFirstNameEmpty() {
-        
-        Person person = new Person();
-        person.setFirstName("");
-        person.setLastName("smith");
+    public void addPetTest() {
+        Owner owner = new Owner();
 
-        // Validator validator = createValidator();
-        // Set<ConstraintViolation<Person>> constraintViolations = validator.validate(person);
+        Pet pet = new Pet();
+        owner.addPet(pet);
 
-        // assertThat(constraintViolations.size()).isEqualTo(1);
-        // ConstraintViolation<Person> violation = constraintViolations.iterator().next();
-        // assertThat(violation.getPropertyPath().toString()).isEqualTo("firstName");
-        // assertThat(violation.getMessage()).isEqualTo("must not be empty");
+        HashSet<Pet> settedPets = (HashSet) getField(owner, "pets");
+        assertTrue(settedPets.contains(pet));
     }
 
+    @Test
+    public void addPetOwnerTest() {
+        Owner owner = new Owner();
+        Owner temp = new Owner();
+
+        Pet pet = new Pet();
+        pet.setOwner(temp);
+
+        owner.addPet(pet);
+
+        HashSet<Pet> settedPets = (HashSet) getField(owner, "pets");
+        assertEquals(pet.getOwner(), owner);
+    }
+
+    @Test
+    public void getPetsTest() {
+        Owner owner = new Owner();
+
+        Pet petA = new Pet();
+        petA.setName("pet A");
+        
+        Pet petB = new Pet();
+        petB.setName("pet B");
+
+        Pet petC = new Pet();
+        petC.setName("pet C");
+
+        Pet petD = new Pet();
+        petD.setName("pet D");
+
+
+        owner.addPet(petB);
+        owner.addPet(petD);
+        owner.addPet(petA);
+        owner.addPet(petC);
+        
+        List<Pet> pets = owner.getPets();
+
+        assertEquals(pets.size(), 4);
+        assertEquals(pets.get(0), petA);
+        assertEquals(pets.get(1), petB);
+        assertEquals(pets.get(2), petC);
+        assertEquals(pets.get(3), petD);
+    }
+
+    @Test
+    public void getPetByNameTest() {
+        Owner owner = new Owner();
+        String petName = "petName";
+
+        Pet pet = new Pet();
+        pet.setName(petName);
+
+        owner.addPet(pet);
+
+        Pet result = owner.getPet(petName);
+        assertEquals(result, pet);
+    }
+
+    @Test
+    public void getPetByNameOnInvalidNameTest() {
+        Owner owner = new Owner();
+
+        Pet result = owner.getPet("invalidPetName");
+        assertNull(result);
+    }
 }
