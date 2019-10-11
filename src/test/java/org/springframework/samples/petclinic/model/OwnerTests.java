@@ -74,7 +74,7 @@ public class OwnerTests {
         String testAddress = "this is a test address.";
 
         setField(owner, "address", testAddress);
-        assertEquals(owner.getAddress(), testAddress);
+        assertEquals(testAddress, owner.getAddress());
     }
 
     @Test
@@ -83,7 +83,7 @@ public class OwnerTests {
         String testAddress = "this is a test address.";
 
         owner.setAddress(testAddress);
-        assertEquals( (String) getField(owner, "address"), testAddress);
+        assertEquals(testAddress, (String) getField(owner, "address"));
     }
 
     @Test
@@ -92,7 +92,7 @@ public class OwnerTests {
         String testCity = "this is a test city: Tehran";
 
         owner.setCity(testCity);
-        assertEquals( (String) getField(owner, "city"), testCity);
+        assertEquals(testCity, (String) getField(owner, "city"));
     }
 
     @Test
@@ -101,7 +101,7 @@ public class OwnerTests {
         String testCity = "this is a test city: Tehran";
 
         setField(owner, "city", testCity);
-        assertEquals(owner.getCity(), testCity);
+        assertEquals(testCity, owner.getCity());
     }
 
     @Test
@@ -110,7 +110,7 @@ public class OwnerTests {
         String testTelephone = "this is a test telephone.";
 
         setField(owner, "telephone", testTelephone);
-        assertEquals(owner.getTelephone(), testTelephone);
+        assertEquals(testTelephone, owner.getTelephone());
     }
 
     @Test
@@ -119,7 +119,7 @@ public class OwnerTests {
         String testTelephone = "this is a test telephone.";
 
         owner.setTelephone(testTelephone);
-        assertEquals( (String) getField(owner, "telephone"), testTelephone);
+        assertEquals(testTelephone, (String) getField(owner, "telephone"));
     }
 
     @Test
@@ -135,7 +135,7 @@ public class OwnerTests {
             method.setAccessible(false);
             
             assertTrue(returnValue instanceof HashSet<?>);
-            assertEquals(returnValue.size(), 0);
+            assertEquals(0, returnValue.size());
         } catch(NoSuchMethodException e) {
             assert false : "getPetsInternal method is missing";
         }
@@ -159,7 +159,7 @@ public class OwnerTests {
             method.setAccessible(false);
             
             assertTrue(returnValue instanceof HashSet<?>);
-            assertEquals(returnValue.size(), 1);
+            assertEquals(1, returnValue.size());
             assertTrue(returnValue.contains(pet));
             assertFalse(returnValue.contains(pet2));
         } catch(NoSuchMethodException e) {
@@ -186,7 +186,7 @@ public class OwnerTests {
             HashSet<Pet> settedPets = (HashSet) getField(owner, "pets");
             
             assertTrue(settedPets instanceof HashSet<?>);
-            assertEquals(settedPets.size(), 2);
+            assertEquals(2, settedPets.size());
             assertTrue(settedPets.contains(pet));
             assertTrue(settedPets.contains(pet2));
         } catch(NoSuchMethodException e) {
@@ -216,7 +216,7 @@ public class OwnerTests {
         owner.addPet(pet);
 
         HashSet<Pet> settedPets = (HashSet) getField(owner, "pets");
-        assertEquals(pet.getOwner(), owner);
+        assertEquals(owner, pet.getOwner());
     }
 
     @Test
@@ -243,11 +243,11 @@ public class OwnerTests {
         
         List<Pet> pets = owner.getPets();
 
-        assertEquals(pets.size(), 4);
-        assertEquals(pets.get(0), petA);
-        assertEquals(pets.get(1), petB);
-        assertEquals(pets.get(2), petC);
-        assertEquals(pets.get(3), petD);
+        assertEquals(4, pets.size());
+        assertEquals(petA, pets.get(0));
+        assertEquals(petB, pets.get(1));
+        assertEquals(petC, pets.get(2));
+        assertEquals(petD, pets.get(3));
     }
 
     @Test
@@ -261,7 +261,7 @@ public class OwnerTests {
         owner.addPet(pet);
 
         Pet result = owner.getPet(petName);
-        assertEquals(result, pet);
+        assertEquals(pet, result);
     }
 
     @Test
