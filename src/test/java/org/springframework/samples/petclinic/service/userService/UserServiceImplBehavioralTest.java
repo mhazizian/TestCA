@@ -1,13 +1,19 @@
-package org.springframework.samples.petclinic.service;
+package org.springframework.samples.petclinic.service.userService;
 
-import org.apache.catalina.User;
-import org.aspectj.lang.annotation.Before;
+
 import org.junit.Test;
+import org.junit.Before;
 import org.junit.runner.RunWith;
+
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.Mockito;
+
+
+import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.repository.UserRepository;
+import org.springframework.samples.petclinic.service.UserServiceImpl;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserServiceImplBehavioralTest {
@@ -23,7 +29,7 @@ public class UserServiceImplBehavioralTest {
 
 	@Before
 	public void setup() {
-       Mockito.when(userRepository.save(user)).do
+    //    Mockito.when(userRepository.save(user)).do
 	}
 	
 	@Test
