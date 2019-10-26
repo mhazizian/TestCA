@@ -35,8 +35,14 @@ public class UserServiceImplBehavioralTest {
 	@InjectMocks
 	UserServiceImpl userServiceImpl;
 
-	@Before
-	public void setup() {
+	private void mockSavableUser() {
+		Role role = mock(Role.class);
+		
+		HashSet<Role> roles = new HashSet<>();
+		roles.add(role);
+		
+		when(role.getName()).thenReturn("ROLE_role");
+		when(user.getRoles()).thenReturn(roles);
 	}
 
 	@Test
@@ -97,12 +103,13 @@ public class UserServiceImplBehavioralTest {
 	}
 	
 	@Test
-	public void shouldsaveAUser() {
-        
-// 	when(userRepository.save(any(User.class))).thenAnswer(i -> {
-//     User user = i.getArgument(0);
-//     userMap.add(user.getId(), user);
-//     return null;
-// });
+	public void shouldsaveAUser() throws Exception {
+		mockSavableUser();
+		ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+
+		userServiceImpl.saveUser(user);
+
+		verify(userRepository, times(1)).save(userCaptor.capture());
+		assertEquals(user, userCaptor.getValue());
 	}
 }
