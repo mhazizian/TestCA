@@ -7,6 +7,8 @@ import org.junit.rules.ExpectedException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
+import static org.junit.Assert.*;
+
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -62,40 +64,36 @@ public class UserServiceImplBehavioralTest {
 	}
 
 	@Test
-	public void standardizeUserRoleTest() throws Exception {
-		Role role1 = mock(Role.class);
+	public void standardizeUserRoleWithRightNameTest() throws Exception {		
 		Role role2 = mock(Role.class);
-
-		when(role1.getName()).thenReturn("roleName");
-		when(role2.getName()).thenReturn("ROLE_role2");
-
-
-
-	// 	when(role1.setName(any(String.class))).thenAnswer(i -> {
-    //     	String roleName = i.getArgument(0);
-    //     	assertEquals("ROLE_roleName", roleName);
-    //     	return null;
-    // });
-
+		
 		HashSet<Role> roles = new HashSet<>();
-		roles.add(role1);
 		roles.add(role2);
-
+		
+		when(role2.getName()).thenReturn("ROLE_role2");
 		when(user.getRoles()).thenReturn(roles);
 
-		// when(role2.getUser()).thenReturn(null);
 		userServiceImpl.saveUser(user);
 
-
-		verify(role1, times(1)).setName(any(String.class));
 		verify(role2, times(0)).setName(any(String.class));
+	}
 
-		// ArgumentCaptor<String> roleNameCaptor = ArgumentCaptor.forClass(String.class);
-		// verify(role1, times(1)).doSomething(captor.capture());
 
-		// // Assert the argument
-		// SomeData actual = captor.getValue();
-		// assertEquals("Some inner data", actual.innerData);
+	@Test
+	public void standardizeUserRoleWithWrongNameTest() throws Exception {
+		Role role1 = mock(Role.class);
+		
+		HashSet<Role> roles = new HashSet<>();
+		roles.add(role1);
+		
+		when(role1.getName()).thenReturn("roleName");
+		when(user.getRoles()).thenReturn(roles);
+
+		userServiceImpl.saveUser(user);
+
+		ArgumentCaptor<String> roleNameCaptor = ArgumentCaptor.forClass(String.class);
+		verify(role1, times(1)).setName(roleNameCaptor.capture());
+		assertEquals("ROLE_roleName", roleNameCaptor.getValue());
 	}
 	
 	@Test
