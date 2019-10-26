@@ -31,7 +31,7 @@ public class UserServiceImplBehavioralTest {
 
     @Mock
     User user;
-
+	
 	@InjectMocks
 	UserServiceImpl userServiceImpl;
 
@@ -96,6 +96,19 @@ public class UserServiceImplBehavioralTest {
 		assertEquals("ROLE_roleName", roleNameCaptor.getValue());
 	}
 	
+	@Test
+	public void getRoleNullUserTest() throws Exception {
+		Role role = mock(Role.class);
+
+		when(role.getUser()).thenReturn(null);
+
+		userServiceImpl.saveUser(user);
+
+		verify(role, times(1)).getUser();
+		verify(role, times(1)).setUser(user)
+		
+	}
+
 	@Test
 	public void shouldsaveAUser() {
         
