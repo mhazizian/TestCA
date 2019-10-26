@@ -46,7 +46,7 @@ public class UserServiceImplBehavioralTest {
 	}
 
 	@Test
-	public void userWithNullRole() throws Exception {
+	public void userWithNullRoleTest() throws Exception {
 		expectedEx.expect(Exception.class);
 		expectedEx.expectMessage("User must have at least a role set!");
 
@@ -58,7 +58,7 @@ public class UserServiceImplBehavioralTest {
 	}
 
 	@Test
-	public void userWithEmptyRole() throws Exception {
+	public void userWithEmptyRoleTest() throws Exception {
 		expectedEx.expect(Exception.class);
 		expectedEx.expectMessage("User must have at least a role set!");
 
@@ -103,7 +103,7 @@ public class UserServiceImplBehavioralTest {
 	}
 	
 	@Test
-	public void getRoleNullUserTest() throws Exception {
+	public void getRoleWithNullUserTest() throws Exception {
 		Role role = mock(Role.class);
 		ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
 
@@ -119,10 +119,26 @@ public class UserServiceImplBehavioralTest {
 		verify(role, times(1)).getUser();
 		verify(role, times(1)).setUser(userCaptor.capture());
 		assertEquals(userCaptor.getValue(), user);
-		
 	}
 
+	@Test
+	public void getRoleWithNonNullUserTest() throws Exception {
+		Role role = mock(Role.class);
 
+		HashSet<Role> roles = new HashSet<>();
+		roles.add(role);
+		
+		when(role.getName()).thenReturn("ROLE_role");
+		when(user.getRoles()).thenReturn(roles);
+		when(role.getUser()).thenReturn(user);
+
+		userServiceImpl.saveUser(user);
+
+		verify(role, times(1)).getUser();
+		verify(role, times(0)).setUser(any(User.class));
+	}
+
+	@Test
 	public void shouldsaveAUser() throws Exception {
 		mockSavableUser();
 		ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
