@@ -70,21 +70,34 @@ public class UserServiceImplBehavioralTest {
 	}
 
 	@Test
+	public void standardizeRoleWithNullName() throws Exception {
+		Role role = mock(Role.class);
+
+		HashSet<Role> roles = new HashSet<>();
+		roles.add(role);
+
+		when(role.getName()).thenReturn(null);
+		when(user.getRoles()).thenReturn(roles);
+
+		userServiceImpl.saveUser(user);
+	}
+
+	@Test
 	public void standardizeUserRoleWithRightNameTest() throws Exception {		
-		Role role2 = mock(Role.class);
+		Role role = mock(Role.class);
 		
 		HashSet<Role> roles = new HashSet<>();
-		roles.add(role2);
+		roles.add(role);
 		
-		when(role2.getName()).thenReturn("ROLE_role2");
+		when(role.getName()).thenReturn("ROLE_role2");
 		when(user.getRoles()).thenReturn(roles);
 
 		userServiceImpl.saveUser(user);
 
-		verify(role2, times(0)).setName(any(String.class));
+		verify(role, times(0)).setName(any(String.class));
 	}
 
-
+ 
 	@Test
 	public void standardizeUserRoleWithWrongNameTest() throws Exception {
 		Role role1 = mock(Role.class);
