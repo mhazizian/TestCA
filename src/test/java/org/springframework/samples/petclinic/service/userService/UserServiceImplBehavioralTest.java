@@ -70,6 +70,7 @@ public class UserServiceImplBehavioralTest {
 
 	@Test
 	public void standardizeRoleWithNullName() throws Exception {
+		expectedEx.expect(NullPointerException.class);
 		Role role = mock(Role.class);
 
 		HashSet<Role> roles = new HashSet<>();
