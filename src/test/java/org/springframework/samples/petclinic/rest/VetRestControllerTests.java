@@ -17,6 +17,7 @@
 package org.springframework.samples.petclinic.rest;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -31,10 +32,12 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.samples.petclinic.model.Specialty;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.service.clinicService.ApplicationTestConfig;
 import org.springframework.samples.petclinic.service.ClinicService;
@@ -93,6 +96,17 @@ public class VetRestControllerTests {
     	vet.setFirstName("Linda");
     	vet.setLastName("Douglas");
     	vets.add(vet);
+
+        vet = new Vet();
+        vet.setId(4);
+        vet.setFirstName("Mock");
+        vet.setLastName("Mocker");
+        Specialty spec = new Specialty();
+        spec.setId(1);
+        spec.setName("blonde");
+        vet.addSpecialty(spec);
+        vets.add(vet);
+
     }
 
     @Test
@@ -197,7 +211,52 @@ public class VetRestControllerTests {
     	this.mockMvc.perform(put("/api/vets/1")
     		.content(newVetAsJSON).accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
         	.andExpect(status().isBadRequest());
-     }
+    }
+
+    @Test
+    @WithMockUser(roles="VET_ADMIN")
+    public void testUpdateVetErrorWithNullVet() throws Exception {
+        Vet newVet = null;
+        ObjectMapper mapper = new ObjectMapper();
+        String newVetAsJSON = mapper.writeValueAsString(newVet);
+        this.mockMvc.perform(put("/api/vets/1")
+            .content(newVetAsJSON).accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser(roles="VET_ADMIN")
+    public void testUpdateVetNotFoundError() throws Exception {
+        Vet newVet = vets.get(0);
+        newVet.setFirstName("duck");
+        ObjectMapper mapper = new ObjectMapper();
+        String newVetAsJSON = mapper.writeValueAsString(newVet);
+        when(clinicService.findPetById(1)).thenReturn(null);
+        this.mockMvc.perform(put("/api/vets/1")
+            .content(newVetAsJSON).accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(roles="VET_ADMIN")
+    public void testUpdateVetSuccessWithSpecialty() throws Exception {
+        when(this.clinicService.findVetById(4)).thenReturn(vets.get(3));
+        Vet newVet = vets.get(3);
+        newVet.setFirstName("James");
+        ObjectMapper mapper = new ObjectMapper();
+        String newVetAsJSON = mapper.writeValueAsString(newVet);
+        this.mockMvc.perform(put("/api/vets/4")
+            .content(newVetAsJSON).accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().contentType("application/json;charset=UTF-8"))
+            .andExpect(status().isNoContent());
+
+        this.mockMvc.perform(get("/api/vets/4")
+            .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType("application/json;charset=UTF-8"))
+            .andExpect(jsonPath("$.id").value(4))
+            .andExpect(jsonPath("$.firstName").value("James"));
+    }
 
     @Test
     @WithMockUser(roles="VET_ADMIN")
