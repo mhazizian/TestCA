@@ -126,7 +126,7 @@ public class JdbcPetRepositoryImpl implements PetRepository {
             .addValue("type_id", pet.getType().getId())
             .addValue("owner_id", pet.getOwner().getId());
     }
-    
+
 	@Override
 	public Collection<Pet> findAll() throws DataAccessException {
 		Map<String, Object> params = new HashMap<>();
@@ -136,21 +136,8 @@ public class JdbcPetRepositoryImpl implements PetRepository {
 				.query("SELECT pets.id as pets_id, name, birth_date, type_id, owner_id FROM pets",
 				params,
 				new JdbcPetRowMapper());
-		Collection<PetType> petTypes = this.namedParameterJdbcTemplate.query("SELECT id, name FROM types ORDER BY name",
-				new HashMap<String,
-				Object>(), BeanPropertyRowMapper.newInstance(PetType.class));
-		Collection<Owner> owners = this.namedParameterJdbcTemplate.query(
-				"SELECT id, first_name, last_name, address, city, telephone FROM owners ORDER BY last_name",
-				new HashMap<String, Object>(),
-				BeanPropertyRowMapper.newInstance(Owner.class));
-		for (JdbcPet jdbcPet : jdbcPets) {
-			jdbcPet.setType(EntityUtils.getById(petTypes, PetType.class, jdbcPet.getTypeId()));
-			jdbcPet.setOwner(EntityUtils.getById(owners, Owner.class, jdbcPet.getOwnerId()));
-			// TODO add visits
-			pets.add(jdbcPet);
-		}
-		return pets;
-	}
+        return findTypeAndOwner(pets, jdbcPets);
+    }
 
 	@Override
 	public void delete(Pet pet) throws DataAccessException {
@@ -165,5 +152,34 @@ public class JdbcPetRepositoryImpl implements PetRepository {
 		}
 		this.namedParameterJdbcTemplate.update("DELETE FROM pets WHERE id=:id", pet_params);
 	}
+
+    @Override
+    public Collection<Pet> findByOwner(Owner owner) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("id", owner.getId());
+        Collection<Pet> pets = new ArrayList<>();
+        Collection<JdbcPet> jdbcPets;
+        jdbcPets = this.namedParameterJdbcTemplate
+            .query("SELECT pets.id as pets_id, name, birth_date, type_id, owner_id FROM pets WHERE owner_id=:id",
+                params,
+                new JdbcPetRowMapper());
+        return findTypeAndOwner(pets, jdbcPets);
+    }
+
+    private Collection<Pet> findTypeAndOwner(Collection<Pet> pets, Collection<JdbcPet> jdbcPets) {
+        Collection<PetType> petTypes = this.namedParameterJdbcTemplate.query("SELECT id, name FROM types ORDER BY name",
+            new HashMap<>(), BeanPropertyRowMapper.newInstance(PetType.class));
+        Collection<Owner> owners = this.namedParameterJdbcTemplate.query(
+            "SELECT id, first_name, last_name, address, city, telephone FROM owners ORDER BY last_name",
+            new HashMap<>(),
+            BeanPropertyRowMapper.newInstance(Owner.class));
+        for (JdbcPet jdbcPet : jdbcPets) {
+            jdbcPet.setType(EntityUtils.getById(petTypes, PetType.class, jdbcPet.getTypeId()));
+            jdbcPet.setOwner(EntityUtils.getById(owners, Owner.class, jdbcPet.getOwnerId()));
+            // TODO add visits
+            pets.add(jdbcPet);
+        }
+        return pets;
+    }
 
 }

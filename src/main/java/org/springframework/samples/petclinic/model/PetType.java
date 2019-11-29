@@ -15,8 +15,11 @@
  */
 package org.springframework.samples.petclinic.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
 
 /**
  * @author Juergen Hoeller
@@ -25,5 +28,8 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "types")
 public class PetType extends NamedEntity {
-
+    @Id
+    @Column(name = "type_name")
+    @NotEmpty
+    protected String typeName;
 }

@@ -50,7 +50,7 @@ public class Vet extends Person {
     @JoinTable(name = "vet_specialties", joinColumns = @JoinColumn(name = "vet_id"),
         inverseJoinColumns = @JoinColumn(name = "specialty_id"))
     private Set<Specialty> specialties;
-    
+
     @JsonIgnore
     protected Set<Specialty> getSpecialtiesInternal() {
         if (this.specialties == null) {
@@ -77,9 +77,11 @@ public class Vet extends Person {
     public void addSpecialty(Specialty specialty) {
         getSpecialtiesInternal().add(specialty);
     }
-    
+
     public void clearSpecialties() {
         getSpecialtiesInternal().clear();
     }
+
+    public boolean canCurePetTye(PetType p) { return specialties.stream().anyMatch(s->s.canCure(p)); }
 
 }

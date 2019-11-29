@@ -15,12 +15,7 @@
  */
 package org.springframework.samples.petclinic.model;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -112,6 +107,11 @@ public class Pet extends NamedEntity {
         List<Visit> sortedVisits = new ArrayList<>(getVisitsInternal());
         PropertyComparator.sort(sortedVisits, new MutableSortDefinition("date", false, false));
         return Collections.unmodifiableList(sortedVisits);
+    }
+
+    public Optional<Visit> getLastVisit() {
+        Collection<Visit> visits = getVisits();
+        return Optional.ofNullable(visits.iterator().next());
     }
 
     public void addVisit(Visit visit) {

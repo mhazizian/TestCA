@@ -15,8 +15,8 @@
  */
 package org.springframework.samples.petclinic.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 
 /**
  * Models a {@link Vet Vet's} specialty (for example, dentistry).
@@ -27,4 +27,31 @@ import javax.persistence.Table;
 @Table(name = "specialties")
 public class Specialty extends NamedEntity {
 
+    @Column(name = "specialtyName")
+    @NotEmpty
+    private String specialtyName;
+
+    @ManyToOne
+    @JoinColumn(name = "type_id")
+    private PetType specialistIn;
+
+    public PetType getType() {
+        return specialistIn;
+    }
+
+    public void setType(PetType specialistIn) {
+        this.specialistIn = specialistIn;
+    }
+
+    public String getSpecialtyName() {
+        return specialtyName;
+    }
+
+    public void setSpecialtyName(String specialtyName) {
+        this.specialtyName = specialtyName;
+    }
+
+    public boolean canCure(PetType pt) {
+        return specialistIn.typeName.equals(pt.typeName);
+    }
 }
