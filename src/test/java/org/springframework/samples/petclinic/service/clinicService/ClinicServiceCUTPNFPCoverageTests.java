@@ -1,8 +1,6 @@
 package org.springframework.samples.petclinic.service.clinicService;
 
-import com.github.mryf323.tractatus.ClauseCoverage;
-import com.github.mryf323.tractatus.ClauseDefinition;
-import com.github.mryf323.tractatus.Valuation;
+import com.github.mryf323.tractatus.*;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,9 +20,10 @@ import java.util.Date;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ClinicServiceClauseCoverageTest {
+public class ClinicServiceCUTPNFPCoverageTests {
 
     @Mock
     PetRepository petRepository;
@@ -51,8 +50,10 @@ public class ClinicServiceClauseCoverageTest {
     ClinicServiceImpl clinicService;
 
     @ClauseDefinition(clause = 'a', def = "last.isPresent()")
-    @ClauseCoverage(
+    @UniqueTruePoint(
         predicate = "a",
+        cnf = "a",
+        implicant = "a",
         valuations = {
             @Valuation(clause = 'a', valuation = true)
         }
@@ -73,8 +74,11 @@ public class ClinicServiceClauseCoverageTest {
     }
 
     @ClauseDefinition(clause = 'a', def = "last.isPresent()")
-    @ClauseCoverage(
+    @NearFalsePoint(
         predicate = "a",
+        cnf = "a",
+        implicant = "a",
+        clause = 'a',
         valuations = {
             @Valuation(clause = 'a', valuation = false)
         }
@@ -94,77 +98,12 @@ public class ClinicServiceClauseCoverageTest {
         verify(pet, times(0)).getBirthDate();
     }
 
-    @ClauseDefinition(clause = 'a', def = "age > 3")
-    @ClauseDefinition(clause = 'b', def = "daysFromLastVisit > 364")
-    @ClauseDefinition(clause = 'c', def = "age <= 3")
-    @ClauseDefinition(clause = 'd', def = "daysFromLastVisit > 182")
-    @ClauseCoverage(
-        predicate = "ab + cd",
-        valuations = {
-            @Valuation(clause = 'a', valuation = true),
-            @Valuation(clause = 'b', valuation = true),
-            @Valuation(clause = 'c', valuation = false),
-            @Valuation(clause = 'd', valuation = true),
-        }
-    )
-    @Test(expected = ClinicServiceImpl.VisitException.class)
-    public void testPetNeedVisitWith4YearsAgeAnd365DaysFromLastVisit() {
-        Date yearsAgo4 = DateTime.now().minusYears(4).toDate();
-        Date daysAgo365 = DateTime.now().minusDays(365).toDate();
-
-        Collection<Pet> pets = new ArrayList<>();
-        pets.add(pet);
-        when(petRepository.findByOwner(Mockito.any(Owner.class))).thenReturn(pets);
-        Optional<Visit> lastVisitOpt = Optional.of(lastVisit);
-        when(pet.getLastVisit()).thenReturn(lastVisitOpt);
-
-        when(pet.getBirthDate()).thenReturn(yearsAgo4);
-        when(lastVisit.getDate()).thenReturn(daysAgo365);
-
-        clinicService.visitOwnerPets(owner);
-
-        verify(petRepository, times(1)).findByOwner(Mockito.any());
-        verify(pet, times(1)).getLastVisit();
-        verify(pet, times(1)).getBirthDate();
-    }
-
-    @ClauseDefinition(clause = 'a', def = "age > 3")
-    @ClauseDefinition(clause = 'b', def = "daysFromLastVisit > 364")
-    @ClauseDefinition(clause = 'c', def = "age <= 3")
-    @ClauseDefinition(clause = 'd', def = "daysFromLastVisit > 182")
-    @ClauseCoverage(
-        predicate = "ab + cd",
-        valuations = {
-            @Valuation(clause = 'a', valuation = false),
-            @Valuation(clause = 'b', valuation = false),
-            @Valuation(clause = 'c', valuation = true),
-            @Valuation(clause = 'd', valuation = false),
-        }
-    )
-    @Test
-    public void testPetNeedVisitWith2YearsAgeAnd100DaysFromLastVisit() {
-        Date yearsAgo4 = DateTime.now().minusYears(2).toDate();
-        Date daysAgo365 = DateTime.now().minusDays(100).toDate();
-
-        Collection<Pet> pets = new ArrayList<>();
-        pets.add(pet);
-        when(petRepository.findByOwner(Mockito.any(Owner.class))).thenReturn(pets);
-        Optional<Visit> lastVisitOpt = Optional.of(lastVisit);
-        when(pet.getLastVisit()).thenReturn(lastVisitOpt);
-
-        when(pet.getBirthDate()).thenReturn(yearsAgo4);
-        when(lastVisit.getDate()).thenReturn(daysAgo365);
-
-        clinicService.visitOwnerPets(owner);
-
-        verify(petRepository, times(1)).findByOwner(Mockito.any());
-        verify(pet, times(1)).getLastVisit();
-        verify(pet, times(1)).getBirthDate();
-    }
-
     @ClauseDefinition(clause = 'a', def = "notVisited.size() > 0")
-    @ClauseCoverage(
+    @NearFalsePoint(
         predicate = "a",
+        cnf = "a",
+        implicant = "a",
+        clause = 'a',
         valuations = {
             @Valuation(clause = 'a', valuation = false)
         }
@@ -185,8 +124,10 @@ public class ClinicServiceClauseCoverageTest {
     }
 
     @ClauseDefinition(clause = 'a', def = "notVisited.size() > 0")
-    @ClauseCoverage(
+    @UniqueTruePoint(
         predicate = "a",
+        cnf = "a",
+        implicant = "a",
         valuations = {
             @Valuation(clause = 'a', valuation = true)
         }
@@ -207,8 +148,10 @@ public class ClinicServiceClauseCoverageTest {
     }
 
     @ClauseDefinition(clause = 'a', def = "vet.isPresent()")
-    @ClauseCoverage(
+    @UniqueTruePoint(
         predicate = "a",
+        cnf = "a",
+        implicant = "a",
         valuations = {
             @Valuation(clause = 'a', valuation = true)
         }
@@ -235,8 +178,11 @@ public class ClinicServiceClauseCoverageTest {
     }
 
     @ClauseDefinition(clause = 'a', def = "vet.isPresent()")
-    @ClauseCoverage(
+    @NearFalsePoint(
         predicate = "a",
+        cnf = "a",
+        implicant = "a",
+        clause = 'a',
         valuations = {
             @Valuation(clause = 'a', valuation = false)
         }
@@ -261,4 +207,38 @@ public class ClinicServiceClauseCoverageTest {
         verify(pet, times(0)).getBirthDate();
         verify(visitRepository, times(0)).save(Mockito.any(Visit.class));
     }
+
+//    @ClauseDefinition(clause = 'a', def = "age > 3")
+//    @ClauseDefinition(clause = 'b', def = "daysFromLastVisit > 364")
+//    @ClauseDefinition(clause = 'c', def = "age <= 3")
+//    @ClauseDefinition(clause = 'd', def = "daysFromLastVisit > 182")
+//    @ClauseCoverage(
+//        predicate = "ab + cd",
+//        valuations = {
+//            @Valuation(clause = 'a', valuation = true),
+//            @Valuation(clause = 'b', valuation = true),
+//            @Valuation(clause = 'c', valuation = false),
+//            @Valuation(clause = 'd', valuation = true),
+//        }
+//    )
+//    @Test(expected = ClinicServiceImpl.VisitException.class)
+//    public void testPetNeedVisitWith4YearsAgeAnd365DaysFromLastVisit() {
+//        Date yearsAgo4 = DateTime.now().minusYears(4).toDate();
+//        Date daysAgo365 = DateTime.now().minusDays(365).toDate();
+//
+//        Collection<Pet> pets = new ArrayList<>();
+//        pets.add(pet);
+//        when(petRepository.findByOwner(Mockito.any(Owner.class))).thenReturn(pets);
+//        Optional<Visit> lastVisitOpt = Optional.of(lastVisit);
+//        when(pet.getLastVisit()).thenReturn(lastVisitOpt);
+//
+//        when(pet.getBirthDate()).thenReturn(yearsAgo4);
+//        when(lastVisit.getDate()).thenReturn(daysAgo365);
+//
+//        clinicService.visitOwnerPets(owner);
+//
+//        verify(petRepository, times(1)).findByOwner(Mockito.any());
+//        verify(pet, times(1)).getLastVisit();
+//        verify(pet, times(1)).getBirthDate();
+//    }
 }
