@@ -208,37 +208,153 @@ public class ClinicServiceCUTPNFPCoverageTests {
         verify(visitRepository, times(0)).save(Mockito.any(Visit.class));
     }
 
-//    @ClauseDefinition(clause = 'a', def = "age > 3")
-//    @ClauseDefinition(clause = 'b', def = "daysFromLastVisit > 364")
-//    @ClauseDefinition(clause = 'c', def = "age <= 3")
-//    @ClauseDefinition(clause = 'd', def = "daysFromLastVisit > 182")
-//    @ClauseCoverage(
-//        predicate = "ab + cd",
-//        valuations = {
-//            @Valuation(clause = 'a', valuation = true),
-//            @Valuation(clause = 'b', valuation = true),
-//            @Valuation(clause = 'c', valuation = false),
-//            @Valuation(clause = 'd', valuation = true),
-//        }
-//    )
-//    @Test(expected = ClinicServiceImpl.VisitException.class)
-//    public void testPetNeedVisitWith4YearsAgeAnd365DaysFromLastVisit() {
-//        Date yearsAgo4 = DateTime.now().minusYears(4).toDate();
-//        Date daysAgo365 = DateTime.now().minusDays(365).toDate();
-//
-//        Collection<Pet> pets = new ArrayList<>();
-//        pets.add(pet);
-//        when(petRepository.findByOwner(Mockito.any(Owner.class))).thenReturn(pets);
-//        Optional<Visit> lastVisitOpt = Optional.of(lastVisit);
-//        when(pet.getLastVisit()).thenReturn(lastVisitOpt);
-//
-//        when(pet.getBirthDate()).thenReturn(yearsAgo4);
-//        when(lastVisit.getDate()).thenReturn(daysAgo365);
-//
-//        clinicService.visitOwnerPets(owner);
-//
-//        verify(petRepository, times(1)).findByOwner(Mockito.any());
-//        verify(pet, times(1)).getLastVisit();
-//        verify(pet, times(1)).getBirthDate();
-//    }
+    @ClauseDefinition(clause = 'a', def = "age > 3")
+    @ClauseDefinition(clause = 'b', def = "daysFromLastVisit > 364")
+    @ClauseDefinition(clause = 'c', def = "age <= 3")
+    @ClauseDefinition(clause = 'd', def = "daysFromLastVisit > 182")
+    @UniqueTruePoint(
+        predicate = "ab + cd",
+        cnf = "ab + cd",
+        implicant = "ab",
+        valuations = {
+            @Valuation(clause = 'a', valuation = true),
+            @Valuation(clause = 'b', valuation = true),
+            @Valuation(clause = 'c', valuation = false),
+            @Valuation(clause = 'd', valuation = true),
+        }
+    )
+    @Test(expected = ClinicServiceImpl.VisitException.class)
+    public void testPetNeedVisitWith4YearsAgeAnd365DaysFromLastVisit() {
+        Date yearsAgo = DateTime.now().minusYears(4).toDate();
+        Date daysAgo = DateTime.now().minusDays(365).toDate();
+
+        Collection<Pet> pets = new ArrayList<>();
+        pets.add(pet);
+        when(petRepository.findByOwner(Mockito.any(Owner.class))).thenReturn(pets);
+        Optional<Visit> lastVisitOpt = Optional.of(lastVisit);
+        when(pet.getLastVisit()).thenReturn(lastVisitOpt);
+
+        when(pet.getBirthDate()).thenReturn(yearsAgo);
+        when(lastVisit.getDate()).thenReturn(daysAgo);
+
+        clinicService.visitOwnerPets(owner);
+
+        verify(petRepository, times(1)).findByOwner(Mockito.any());
+        verify(pet, times(1)).getLastVisit();
+        verify(pet, times(1)).getBirthDate();
+        verify(pet, times(1)).getType();
+    }
+
+    @ClauseDefinition(clause = 'a', def = "age > 3")
+    @ClauseDefinition(clause = 'b', def = "daysFromLastVisit > 364")
+    @ClauseDefinition(clause = 'c', def = "age <= 3")
+    @ClauseDefinition(clause = 'd', def = "daysFromLastVisit > 182")
+    @NearFalsePoint(
+        predicate = "ab + cd",
+        cnf = "ab + cd",
+        implicant = "ab",
+        clause = 'b',
+        valuations = {
+            @Valuation(clause = 'a', valuation = true),
+            @Valuation(clause = 'b', valuation = false),
+            @Valuation(clause = 'c', valuation = false),
+            @Valuation(clause = 'd', valuation = true),
+        }
+    )
+    @Test
+    public void testPetNeedVisitWith4YearsAgeAnd200DaysFromLastVisit() {
+        Date yearsAgo = DateTime.now().minusYears(4).toDate();
+        Date daysAgo = DateTime.now().minusDays(200).toDate();
+
+        Collection<Pet> pets = new ArrayList<>();
+        pets.add(pet);
+        when(petRepository.findByOwner(Mockito.any(Owner.class))).thenReturn(pets);
+        Optional<Visit> lastVisitOpt = Optional.of(lastVisit);
+        when(pet.getLastVisit()).thenReturn(lastVisitOpt);
+
+        when(pet.getBirthDate()).thenReturn(yearsAgo);
+        when(lastVisit.getDate()).thenReturn(daysAgo);
+
+        clinicService.visitOwnerPets(owner);
+
+        verify(petRepository, times(1)).findByOwner(Mockito.any());
+        verify(pet, times(1)).getLastVisit();
+        verify(pet, times(1)).getBirthDate();
+        verify(pet, times(0)).getType();
+    }
+
+    @ClauseDefinition(clause = 'a', def = "age > 3")
+    @ClauseDefinition(clause = 'b', def = "daysFromLastVisit > 364")
+    @ClauseDefinition(clause = 'c', def = "age <= 3")
+    @ClauseDefinition(clause = 'd', def = "daysFromLastVisit > 182")
+    @UniqueTruePoint(
+        predicate = "ab + cd",
+        cnf = "ab + cd",
+        implicant = "cd",
+        valuations = {
+            @Valuation(clause = 'a', valuation = false),
+            @Valuation(clause = 'b', valuation = false),
+            @Valuation(clause = 'c', valuation = true),
+            @Valuation(clause = 'd', valuation = true),
+        }
+    )
+    @Test(expected = ClinicServiceImpl.VisitException.class)
+    public void testPetNeedVisitWith2YearsAgeAnd200DaysFromLastVisit() {
+        Date yearsAgo = DateTime.now().minusYears(2).toDate();
+        Date daysAgo = DateTime.now().minusDays(200).toDate();
+
+        Collection<Pet> pets = new ArrayList<>();
+        pets.add(pet);
+        when(petRepository.findByOwner(Mockito.any(Owner.class))).thenReturn(pets);
+        Optional<Visit> lastVisitOpt = Optional.of(lastVisit);
+        when(pet.getLastVisit()).thenReturn(lastVisitOpt);
+
+        when(pet.getBirthDate()).thenReturn(yearsAgo);
+        when(lastVisit.getDate()).thenReturn(daysAgo);
+
+        clinicService.visitOwnerPets(owner);
+
+        verify(petRepository, times(1)).findByOwner(Mockito.any());
+        verify(pet, times(1)).getLastVisit();
+        verify(pet, times(1)).getBirthDate();
+        verify(pet, times(1)).getType();
+    }
+
+    @ClauseDefinition(clause = 'a', def = "age > 3")
+    @ClauseDefinition(clause = 'b', def = "daysFromLastVisit > 364")
+    @ClauseDefinition(clause = 'c', def = "age <= 3")
+    @ClauseDefinition(clause = 'd', def = "daysFromLastVisit > 182")
+    @NearFalsePoint(
+        predicate = "ab + cd",
+        cnf = "ab + cd",
+        implicant = "cd",
+        clause = 'd',
+        valuations = {
+            @Valuation(clause = 'a', valuation = false),
+            @Valuation(clause = 'b', valuation = false),
+            @Valuation(clause = 'c', valuation = true),
+            @Valuation(clause = 'd', valuation = false),
+        }
+    )
+    @Test
+    public void testPetNeedVisitWith2YearsAgeAnd100DaysFromLastVisit() {
+        Date yearsAgo = DateTime.now().minusYears(1).toDate();
+        Date daysAgo = DateTime.now().minusDays(100).toDate();
+
+        Collection<Pet> pets = new ArrayList<>();
+        pets.add(pet);
+        when(petRepository.findByOwner(Mockito.any(Owner.class))).thenReturn(pets);
+        Optional<Visit> lastVisitOpt = Optional.of(lastVisit);
+        when(pet.getLastVisit()).thenReturn(lastVisitOpt);
+
+        when(pet.getBirthDate()).thenReturn(yearsAgo);
+        when(lastVisit.getDate()).thenReturn(daysAgo);
+
+        clinicService.visitOwnerPets(owner);
+
+        verify(petRepository, times(1)).findByOwner(Mockito.any());
+        verify(pet, times(1)).getLastVisit();
+        verify(pet, times(1)).getBirthDate();
+        verify(pet, times(0)).getType();
+    }
 }
