@@ -143,8 +143,8 @@ public class ClinicServiceClauseCoverageTest {
     )
     @Test
     public void testPetNeedVisitWith2YearsAgeAnd100DaysFromLastVisit() {
-        Date yearsAgo4 = DateTime.now().minusYears(2).toDate();
-        Date daysAgo365 = DateTime.now().minusDays(100).toDate();
+        Date yearsAgo2 = DateTime.now().minusYears(2).toDate();
+        Date daysAgo100 = DateTime.now().minusDays(100).toDate();
 
         Collection<Pet> pets = new ArrayList<>();
         pets.add(pet);
@@ -152,8 +152,8 @@ public class ClinicServiceClauseCoverageTest {
         Optional<Visit> lastVisitOpt = Optional.of(lastVisit);
         when(pet.getLastVisit()).thenReturn(lastVisitOpt);
 
-        when(pet.getBirthDate()).thenReturn(yearsAgo4);
-        when(lastVisit.getDate()).thenReturn(daysAgo365);
+        when(pet.getBirthDate()).thenReturn(yearsAgo2);
+        when(lastVisit.getDate()).thenReturn(daysAgo100);
 
         clinicService.visitOwnerPets(owner);
 
