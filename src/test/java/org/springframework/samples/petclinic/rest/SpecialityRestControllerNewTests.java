@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -26,7 +27,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
+//@SpringBootTest
+@WebMvcTest(SpecialtyRestController.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes= ApplicationTestConfig.class)
 @WebAppConfiguration
@@ -90,9 +92,20 @@ public class SpecialityRestControllerNewTests {
 
 //    @Test
 //    public void testUpdateSpecialtyWithWrongPermission() throws Exception {
+//        Specialty specialty = new Specialty();
+//        specialty.setId(3);
+//        specialty.setName("testSpeciality");
+//
+//        given(this.clinicService.findSpecialtyById(3)).willReturn(specialty);
+//        Specialty newSpecialty = new Specialty();
+//        newSpecialty.setId(3);
+//        newSpecialty.setName("NewName");
+//        ObjectMapper mapper = new ObjectMapper();
+//        String newSpecialtyAsJSON = mapper.writeValueAsString(newSpecialty);
+//
 //        this.mockMvc.perform(put("/api/specialties/3")
-//            .content("{}").accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
-//            .andExpect(status().isForbidden());
+//            .content(newSpecialtyAsJSON).accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
+//            .andExpect(status().isBadRequest());
 //    }
 
 
@@ -112,13 +125,13 @@ public class SpecialityRestControllerNewTests {
 
         this.mockMvc.perform(put("/api/specialties/3")
             .content(newSpecialtyAsJSON).accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(content().contentType("application/json;charset=UTF-8"))
+//            .andExpect(content().contentType("application/json;charset=UTF-8"))
             .andExpect(status().isNoContent());
 
         this.mockMvc.perform(get("/api/specialties/3")
             .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
-            .andExpect(content().contentType("application/json;charset=UTF-8"))
+//            .andExpect(content().contentType("application/json;charset=UTF-8"))
             .andExpect(jsonPath("$.id").value(3))
             .andExpect(jsonPath("$.name").value("NewName"));
     }
