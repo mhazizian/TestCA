@@ -109,14 +109,14 @@ public class Pet extends NamedEntity {
         return Collections.unmodifiableList(sortedVisits);
     }
 
-    public Optional<Visit> getLastVisit() {
-        Collection<Visit> visits = getVisits();
-        return Optional.ofNullable(visits.iterator().next());
-    }
-
     public void addVisit(Visit visit) {
         getVisitsInternal().add(visit);
         visit.setPet(this);
     }
+
+    public Optional<Visit> getLastVisit() {
+        return Optional.ofNullable(null);
+    }
+
 
 }

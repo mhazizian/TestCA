@@ -26,12 +26,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.orm.ObjectRetrievalFailureException;
-import org.springframework.samples.petclinic.model.Owner;
-import org.springframework.samples.petclinic.model.Pet;
-import org.springframework.samples.petclinic.model.PetType;
-import org.springframework.samples.petclinic.model.Specialty;
-import org.springframework.samples.petclinic.model.Vet;
-import org.springframework.samples.petclinic.model.Visit;
+import org.springframework.samples.petclinic.model.*;
+import org.springframework.samples.petclinic.model.priceCalculators.PriceCalculator;
 import org.springframework.samples.petclinic.repository.OwnerRepository;
 import org.springframework.samples.petclinic.repository.PetRepository;
 import org.springframework.samples.petclinic.repository.PetTypeRepository;
@@ -229,7 +225,7 @@ public class ClinicServiceImpl implements ClinicService {
             if (last.isPresent()) {
                 int age = Years.yearsBetween(new DateTime(pet.getBirthDate()), today).getYears();
                 int daysFromLastVisit = Days.daysBetween(new DateTime(last.get().getDate()), today).getDays();
-                if ((age>3 && daysFromLastVisit>364) || (age<=3 && daysFromLastVisit>182)) {
+                if ((age > 3 && daysFromLastVisit > 364) || (age <= 3 && daysFromLastVisit > 182)) {
                     visitPetIfPossible(vets, notVisited, pet);
                 }
             } else {
@@ -242,12 +238,11 @@ public class ClinicServiceImpl implements ClinicService {
     }
 
     private void visitPetIfPossible(Collection<Vet> vets, List<Pet> notVisited, Pet pet) {
-        Optional<Vet> vet = vets.stream().filter(v-> v.canCurePetTye(pet.getType())).findAny();
-        if (vet.isPresent()){
+        Optional<Vet> vet = vets.stream().filter(v -> v.canCurePetTye(pet.getType())).findAny();
+        if (vet.isPresent()) {
             Visit visit = new Visit("health check up", pet);
             visitRepository.save(visit);
-        }
-        else {
+        } else {
             notVisited.add(pet);
         }
     }
@@ -289,6 +284,12 @@ public class ClinicServiceImpl implements ClinicService {
     public void savePet(Pet pet) throws DataAccessException {
         petRepository.save(pet);
 
+    }
+
+
+    @Override
+    public double calculateHealthCheckPrice(List<Pet> pets, double baseCharge, double basePricePerPet, UserType userType, PriceCalculator priceCalculator) {
+        return priceCalculator.calcPrice(pets, baseCharge, basePricePerPet,userType);
     }
 
     @Override

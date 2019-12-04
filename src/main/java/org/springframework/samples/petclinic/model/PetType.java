@@ -20,16 +20,19 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Juergen Hoeller
- *         Can be Cat, Dog, Hamster...
+ * Can be Cat, Dog, Hamster...
  */
 @Entity
 @Table(name = "types")
 public class PetType extends NamedEntity {
-    @Id
-    @Column(name = "type_name")
-    @NotEmpty
-    protected String typeName;
+
+    public Boolean getRare() {
+        return true;
+    }
 }

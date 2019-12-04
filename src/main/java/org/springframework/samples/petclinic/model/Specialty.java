@@ -27,31 +27,12 @@ import javax.validation.constraints.NotEmpty;
 @Table(name = "specialties")
 public class Specialty extends NamedEntity {
 
-    @Column(name = "specialtyName")
-    @NotEmpty
-    private String specialtyName;
-
-    @ManyToOne
-    @JoinColumn(name = "type_id")
-    private PetType specialistIn;
 
     public PetType getType() {
-        return specialistIn;
-    }
-
-    public void setType(PetType specialistIn) {
-        this.specialistIn = specialistIn;
-    }
-
-    public String getSpecialtyName() {
-        return specialtyName;
-    }
-
-    public void setSpecialtyName(String specialtyName) {
-        this.specialtyName = specialtyName;
+        return null;
     }
 
     public boolean canCure(PetType pt) {
-        return specialistIn.typeName.equals(pt.typeName);
+        return true;
     }
 }

@@ -35,7 +35,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 @Profile("jpa")
 public class JpaSpecialtyRepositoryImpl implements SpecialtyRepository {
-	
+
     @PersistenceContext
     private EntityManager em;
 

@@ -84,7 +84,7 @@ public class JpaPetRepositoryImpl implements PetRepository {
 
     @Override
     public Collection<Pet> findByOwner(Owner owner) {
-        return this.em.createQuery("SELECT pet FROM Pet pet WHERE owner_id="+ owner.getId()).getResultList();
+        return null;//this.em.createQuery("SELECT pet FROM Pet pet WHERE owner_id="+ owner.getId()).getResultList();
     }
 
 }

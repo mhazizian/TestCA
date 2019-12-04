@@ -16,14 +16,11 @@
 package org.springframework.samples.petclinic.service;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.dao.DataAccessException;
-import org.springframework.samples.petclinic.model.Owner;
-import org.springframework.samples.petclinic.model.Pet;
-import org.springframework.samples.petclinic.model.PetType;
-import org.springframework.samples.petclinic.model.Specialty;
-import org.springframework.samples.petclinic.model.Vet;
-import org.springframework.samples.petclinic.model.Visit;
+import org.springframework.samples.petclinic.model.*;
+import org.springframework.samples.petclinic.model.priceCalculators.PriceCalculator;
 
 
 /**
@@ -67,6 +64,8 @@ public interface ClinicService {
 	Collection<Specialty> findAllSpecialties() throws DataAccessException;
 	void saveSpecialty(Specialty specialty) throws DataAccessException;
 	void deleteSpecialty(Specialty specialty) throws DataAccessException;
+
+    double calculateHealthCheckPrice(List<Pet> pets, double baseCharge, double basePricePerPet, UserType userType, PriceCalculator priceCalculator);
 
 	void visitOwnerPets(Owner owner);
 
