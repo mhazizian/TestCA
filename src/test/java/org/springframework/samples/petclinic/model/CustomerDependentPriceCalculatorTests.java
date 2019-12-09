@@ -47,7 +47,7 @@ public class CustomerDependentPriceCalculatorTests {
 
     private List<Pet> getManyPetsFromSample(List<Pet> sample, int num) {
 
-        List<Pet> res = new ArrayList<Pet>(sample);
+        List<Pet> res = new ArrayList<>(sample);
 
         for(int i = sample.size(); i < num; i++)
             res.add(sample.get(0));
@@ -60,10 +60,10 @@ public class CustomerDependentPriceCalculatorTests {
         when(rareType.getRare()).thenReturn(true);
         when(commonType.getRare()).thenReturn(false);
 
-        youngRarePetsSample = new ArrayList<Pet>();
-        youngCommonPetsSample = new ArrayList<Pet>();
-        oldCommonPetsSample = new ArrayList<Pet>();
-        oldRarePetsSample = new ArrayList<Pet>();
+        youngRarePetsSample = new ArrayList<>();
+        youngCommonPetsSample = new ArrayList<>();
+        oldCommonPetsSample = new ArrayList<>();
+        oldRarePetsSample = new ArrayList<>();
 
         lessThanInfantYears = DateTime.now().minusYears(INFANT_YEARS - 1).toDate();
         infantYears = DateTime.now().minusYears(INFANT_YEARS).toDate();
@@ -200,7 +200,7 @@ public class CustomerDependentPriceCalculatorTests {
     }
 
     @Test
-    public void Section2CommonYoungPetsWithNewUserTypeAndNoDiscountTest() {
+    public void Section2CommonYoungPetsWithNewUserTypeAndDiscountTest() {
         UserType userType = UserType.NEW;
         int petsCount = 10;
         double baseCharge = 1000 * 1000 * 1000;
@@ -213,4 +213,46 @@ public class CustomerDependentPriceCalculatorTests {
         assertEquals(expectedPrice, gottenTotalPrice, 0);
     }
 
+    @Test
+    public void Section2RareYoungPetsWithNotNewUserTypeAndDiscountTest() {
+        UserType userType = UserType.SILVER;
+        int petsCount = 5;
+        double baseCharge = 1000 * 1000 * 1000;
+        double basePricePerPet = 1000 * 1000;
+        double gottenTotalPrice = customerDependentPriceCalculator
+            .calcPrice(getManyPetsFromSample(youngRarePetsSample, petsCount), baseCharge, basePricePerPet, userType);
+
+        double expectedPrice = ((basePricePerPet * BASE_RARE_COEF * RARE_INFANCY_COEF * petsCount) + baseCharge)
+                                * userType.discountRate;
+
+        assertEquals(expectedPrice, gottenTotalPrice, 0);
+    }
+
+    @Test
+    public void Section2CommonYoungPetsWithNewUserTypeAndNoDiscount9Test() {
+        UserType userType = UserType.NEW;
+        int petsCount = 9;
+        double baseCharge = 1000 * 1000 * 1000;
+        double basePricePerPet = 1000 * 1000;
+        double gottenTotalPrice = customerDependentPriceCalculator
+            .calcPrice(getManyPetsFromSample(youngCommonPetsSample, petsCount), baseCharge, basePricePerPet, userType);
+
+        double expectedPrice = basePricePerPet * COMMON_INFANCY_COEF * petsCount;
+
+        assertEquals(expectedPrice, gottenTotalPrice, 0);
+    }
+
+    @Test
+    public void Section2CommonYoungPetsWithNewUserTypeAndDiscount11Test() {
+        UserType userType = UserType.NEW;
+        int petsCount = 9;
+        double baseCharge = 1000 * 1000 * 1000;
+        double basePricePerPet = 1000 * 1000;
+        double gottenTotalPrice = customerDependentPriceCalculator
+            .calcPrice(getManyPetsFromSample(youngCommonPetsSample, petsCount), baseCharge, basePricePerPet, userType);
+
+        double expectedPrice = basePricePerPet * COMMON_INFANCY_COEF * petsCount;
+
+        assertEquals(expectedPrice, gottenTotalPrice, 0);
+    }
 }
