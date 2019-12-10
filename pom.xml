@@ -221,6 +221,9 @@
                     <targetTests>
                         <param>org.springframework.samples.petclinic.model.*</param>
                     </targetTests>
+                    <mutators>
+                        <mutator>NEW_DEFAULTS</mutator>
+                    </mutators>
                 </configuration>
             </plugin>
             <plugin>
